@@ -1,0 +1,604 @@
+@import "@fontsource-variable/schibsted-grotesk";
+@import "tailwindcss";
+
+@source "../views";
+@source "../../app";
+
+/* =====================================================================
+   SISTEMA DE DISENO · Cuaderno y pizarra
+   Sistema de Generacion de Recetas Basado en Ingredientes Disponibles
+
+   Las recetas se copian en el cuaderno de la casa. Tema claro: la hoja
+   cuadriculada, el bolígrafo azul, el grafito y el rojo de corregir.
+   Tema oscuro: la pizarra del aula y la tiza.
+
+   Los nombres de los tokens vienen del diseño anterior y se conservan
+   para no tocar las setenta vistas. Lo que significan hoy:
+     masa-*   el fondo: la hoja (claro) o la pizarra (oscuro)
+     crema-*  la escritura: tinta negra (claro) o tiza (oscuro)
+     oro-*    el acento: bolígrafo azul (claro) o tiza amarilla (oscuro)
+   Los dos temas son las mismas variables con otros valores: cambiar de
+   tema es cambiar el atributo data-tema en <html>, sin otra hoja.
+   ===================================================================== */
+
+@theme {
+  /* Hoja de cuaderno: blanco apenas azulado, nunca crema */
+  --color-masa-950: #eef2f8;  /* lo hundido: pista de barras, zonas vacías */
+  --color-masa-900: #fbfcfe;  /* la hoja: fondo de la página */
+  --color-masa-850: #ffffff;  /* hojas sueltas encima: tarjetas, menú */
+  --color-masa-800: #f4f7fb;  /* desplegables, lo elevado */
+  --color-masa-700: #e4eaf3;
+
+  /* Bolígrafo azul: el acento. 8.4:1 sobre la hoja. */
+  --color-oro-500: #1f3fb8;
+  --color-oro-400: #1f3fb8;
+  --color-oro-300: #2b4fd8;   /* el mismo azul con más presión: hover */
+
+  /* Tinta y grafito: todo el texto */
+  --color-crema-50:  #0f1219;  /* títulos       18.6:1 */
+  --color-crema-100: #1a1d24;  /* texto normal  16.4:1 */
+  --color-crema-300: #464c59;  /* secundario     8.6:1 */
+  --color-crema-500: #5d6472;  /* grafito        5.9:1 */
+
+  /* Estados: tinta verde del visto bueno, lápiz naranja del aviso y el
+     rojo de corregir. Ninguno va solo: siempre con icono y palabra. */
+  --color-exito-400:  #1d7a45;  /* 5.4:1 */
+  --color-alerta-400: #a8500c;  /* 5.3:1 */
+  --color-error-400:  #c22c1f;  /* 5.6:1 */
+
+  /* Material del cuaderno */
+  --color-margen:      #e2675b;  /* la doble línea roja del margen */
+  --color-cuadricula:  #dfe7f2;  /* la cuadrícula de 24 px */
+  --color-linea:       #d7dfeb;  /* bordes de las hojas */
+  --color-linea-fuerte:#b9c4d6;  /* bordes de campos y tablas */
+
+  /* Se conserva para las vistas que lo nombran; ya no es ilegible */
+  --color-ladrillo: #e2675b;
+
+  /* Una sola familia: títulos, texto, etiquetas y cifras */
+  --font-titulo: "Schibsted Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-texto:  "Schibsted Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
+
+  /* Esquinas de papel cortado, casi rectas. Las vistas usan
+     rounded-xl/2xl/3xl; aquí se redefine cuánto redondean. */
+  --radius-xl:  0.25rem;
+  --radius-2xl: 0.25rem;
+  --radius-3xl: 0.3rem;
+}
+
+/* ---------------------------------------------------------------------
+   PIZARRA: el tema oscuro
+
+   Verde de pizarra y tiza. Se aplica con data-tema="oscuro" en <html>,
+   y también en cualquier bloque con .pizarra: las secciones sobre
+   fotografía de la portada lo usan para que su texto sea claro en los
+   dos temas.
+   --------------------------------------------------------------------- */
+
+:root[data-tema="oscuro"],
+.pizarra {
+  --color-masa-950: #18221e;
+  --color-masa-900: #1f2b26;
+  --color-masa-850: #253430;
+  --color-masa-800: #2b3c36;
+  --color-masa-700: #354940;
+
+  --color-oro-500: #f2d36b;   /* tiza amarilla  10.9:1 */
+  --color-oro-400: #f2d36b;
+  --color-oro-300: #f8e294;
+
+  --color-crema-50:  #f6f8f2;
+  --color-crema-100: #eceee6;  /* tiza          12.6:1 */
+  --color-crema-300: #c3cbc2;  /*                8.4:1 */
+  --color-crema-500: #9eaba1;  /*                5.7:1 */
+
+  --color-exito-400:  #8fd6a4;
+  --color-alerta-400: #f3ac63;
+  --color-error-400:  #f6938a;
+
+  --color-margen:      #c8766d;
+  --color-cuadricula:  rgb(236 238 230 / 0.045);
+  --color-linea:       rgb(236 238 230 / 0.12);
+  --color-linea-fuerte:rgb(236 238 230 / 0.24);
+  --color-ladrillo:    #c8766d;
+
+  /* El color heredado se calcula donde se declara: sin esto, el texto sin
+     clase dentro de un bloque .pizarra seguiría en tinta oscura */
+  color: var(--color-crema-100);
+}
+
+/* La hoja de cuaderno siempre en claro, aunque esté sobre una foto o
+   sobre la pizarra: la portada apoya una hoja de ejemplo sobre la foto. */
+.cuaderno {
+  --color-masa-950: #eef2f8;
+  --color-masa-900: #fbfcfe;
+  --color-masa-850: #ffffff;
+  --color-masa-800: #f4f7fb;
+  --color-masa-700: #e4eaf3;
+  --color-oro-500: #1f3fb8;
+  --color-oro-400: #1f3fb8;
+  --color-oro-300: #2b4fd8;
+  --color-crema-50:  #0f1219;
+  --color-crema-100: #1a1d24;
+  --color-crema-300: #464c59;
+  --color-crema-500: #5d6472;
+  --color-exito-400:  #1d7a45;
+  --color-alerta-400: #a8500c;
+  --color-error-400:  #c22c1f;
+  --color-margen:      #e2675b;
+  --color-cuadricula:  #dfe7f2;
+  --color-linea:       #d7dfeb;
+  --color-linea-fuerte:#b9c4d6;
+  color: var(--color-crema-100);
+}
+
+:root { color-scheme: light; }
+:root[data-tema="oscuro"] { color-scheme: dark; }
+
+/* ---------------------------------------------------------------------
+   BASE
+   --------------------------------------------------------------------- */
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-masa-900);
+    color: var(--color-crema-100);
+    font-family: var(--font-texto);
+    font-feature-settings: "ss01";
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* Las cifras de tablas y conteos se alinean como en una libreta */
+  table, .tabular-nums { font-variant-numeric: tabular-nums; }
+
+  ::selection {
+    background: var(--color-oro-500);
+    color: var(--color-masa-900);
+  }
+
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: var(--color-masa-900); }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-linea-fuerte);
+    border-radius: 999px;
+    border: 2px solid var(--color-masa-900);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-oro-500);
+    outline-offset: 2px;
+  }
+
+  input, textarea { caret-color: var(--color-oro-500); }
+
+  a { text-underline-offset: 0.2em; }
+
+  code {
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    font-size: 0.85em;
+  }
+}
+
+/* ---------------------------------------------------------------------
+   COMPONENTES
+   --------------------------------------------------------------------- */
+
+@layer components {
+
+  /* La hoja cuadriculada: el fondo de toda pantalla interna.
+     Celdas de 24 px, tres pasos de la escala de 8. El origen es la
+     esquina del bloque que la lleva: el contenido empieza a 24 o 48 px,
+     así que sus bordes caen sobre una línea. En la pizarra la cuadrícula
+     casi desaparece, como la de un pizarrón borrado. */
+  .hoja-cuadriculada {
+    background-color: var(--color-masa-900);
+    background-image:
+      linear-gradient(var(--color-cuadricula) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-cuadricula) 1px, transparent 1px);
+    background-size: 24px 24px;
+    background-position: -1px -1px;
+  }
+
+  /* El margen rojo del cuaderno: doble línea de 1 px a la izquierda del
+     contenido. Solo desde tablet; en el teléfono robaría ancho. */
+  .con-margen { position: relative; }
+  @media (min-width: 768px) {
+    .con-margen::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 1.5rem;
+      width: 4px;
+      border-left: 1px solid var(--color-margen);
+      border-right: 1px solid var(--color-margen);
+      opacity: 0.55;
+      pointer-events: none;
+    }
+  }
+
+  /* El mismo margen dentro de una hoja suelta (la hoja de ejemplo de la
+     portada): más cerca del borde, desde 640 px */
+  .con-margen-hoja { position: relative; }
+  @media (min-width: 640px) {
+    .con-margen-hoja::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 2.25rem;
+      width: 4px;
+      border-left: 1px solid var(--color-margen);
+      border-right: 1px solid var(--color-margen);
+      opacity: 0.6;
+      pointer-events: none;
+    }
+  }
+
+  /* Los títulos: la misma familia, en negrita y apretada, como el
+     encabezado de una página del cuaderno. El nombre de la clase se
+     conserva de cuando era una serif cursiva. */
+  .titulo-serif {
+    font-family: var(--font-titulo);
+    font-style: normal;
+    font-weight: 760;
+    letter-spacing: -0.028em;
+    line-height: 1.02;
+    color: var(--color-crema-50);
+    text-wrap: balance;
+  }
+
+  /* Un recuadro trazado en la hoja: línea de 1 px y el blanco liso del
+     papel debajo, sin sombra ni vuelo. El relleno se queda porque las
+     tablas y formularios no se leen bien con la cuadrícula detrás del
+     texto. Se llama .vidrio por herencia del diseño anterior. */
+  .vidrio {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-masa-850);
+    border: 1px solid var(--color-linea);
+  }
+
+  /* El recuadro del formulario de acceso: la misma línea, más marcada */
+  .vidrio-solido {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-masa-850);
+    border: 1px solid var(--color-linea-fuerte);
+  }
+
+  /* Resaltado en tinta: fondo teñido del acento */
+  .vidrio-oro {
+    background: color-mix(in oklab, var(--color-oro-500) 9%, var(--color-masa-850));
+    border: 1px solid color-mix(in oklab, var(--color-oro-500) 22%, transparent);
+  }
+
+  /* Botón principal: tinta llena */
+  .boton-oro {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.5rem;
+    background: var(--color-oro-500);
+    color: var(--color-masa-900);
+    font-weight: 650;
+    letter-spacing: -0.005em;
+    padding: 0.8rem 1.4rem;
+    /* La tinta no brilla: solo un filo inferior, como un trazo con presión */
+    box-shadow: inset 0 -2px 0 rgb(0 0 0 / 0.18);
+    transition: background 0.18s ease;
+  }
+  .boton-oro:hover { background: var(--color-oro-300); }
+  .boton-oro:active { box-shadow: inset 0 2px 0 rgb(0 0 0 / 0.18); }
+  .boton-oro:disabled { opacity: 0.45; transform: none; cursor: not-allowed; }
+
+  /* Botón secundario: contorno de tinta */
+  .boton-vidrio {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--color-linea-fuerte);
+    background: var(--color-masa-850);
+    color: var(--color-crema-100);
+    font-weight: 550;
+    padding: 0.8rem 1.4rem;
+    transition: border-color 0.18s ease, background 0.18s ease, color 0.18s ease;
+  }
+  .boton-vidrio:hover {
+    border-color: var(--color-oro-500);
+    color: var(--color-oro-500);
+    background: color-mix(in oklab, var(--color-oro-500) 6%, var(--color-masa-850));
+  }
+  .boton-vidrio:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  /* Campos: renglón en blanco con borde de lápiz */
+  .campo {
+    width: 100%;
+    border-radius: 0.5rem;
+    background: var(--color-masa-850);
+    border: 1px solid var(--color-linea-fuerte);
+    color: var(--color-crema-50);
+    padding: 0.75rem 0.95rem;
+    font-size: 0.95rem;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  }
+  .campo::placeholder { color: var(--color-crema-500); }
+  .campo:hover { border-color: color-mix(in oklab, var(--color-oro-500) 45%, var(--color-linea-fuerte)); }
+  .campo:focus {
+    outline: none;
+    border-color: var(--color-oro-500);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-oro-500) 18%, transparent);
+  }
+  .campo-error {
+    border-color: var(--color-error-400);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-error-400) 16%, transparent);
+  }
+
+  .etiqueta-campo {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--color-crema-300);
+    margin-bottom: 0.4rem;
+  }
+
+  /* Menú desplegable basado en <details>: se oculta el triángulo nativo */
+  .menu > summary::-webkit-details-marker { display: none; }
+  .menu > summary::marker { content: ""; }
+
+  /* Rótulo: etiqueta pequeña de grupo, nunca encima de un título */
+  .rotulo {
+    font-size: 0.72rem;
+    font-weight: 650;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-crema-500);
+  }
+
+  /* -------------------------------------------------------------------
+     MENÚ LATERAL: el índice del cuaderno
+     ------------------------------------------------------------------- */
+
+  .lateral-grupo {
+    margin: 0 0 0.4rem 0.8rem;
+    font-size: 0.68rem;
+    font-weight: 650;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-crema-500);
+  }
+
+  .lateral-enlace {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.5rem 0.8rem;
+    border-radius: 0.4rem;
+    font-size: 0.9rem;
+    color: var(--color-crema-300);
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .lateral-enlace:hover {
+    background: color-mix(in oklab, var(--color-oro-500) 7%, transparent);
+    color: var(--color-crema-50);
+  }
+  .lateral-enlace[aria-current="page"] {
+    background: color-mix(in oklab, var(--color-oro-500) 11%, transparent);
+    color: var(--color-oro-500);
+    font-weight: 650;
+  }
+  .lateral-enlace svg { flex: none; width: 1rem; height: 1rem; }
+
+  /* -------------------------------------------------------------------
+     SELLOS DE GOMA: los estados se estampan
+
+     Borde doble, mayúsculas y una inclinación leve, como el sello que
+     pone la profesora. El color nunca va solo: cada sello lleva icono y
+     palabra, y el de lápiz además cambia de trazo (punteado), así que se
+     distinguen también en blanco y negro.
+     ------------------------------------------------------------------- */
+
+  .sello,
+  .sello-verificada {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.18rem 0.55rem;
+    border-radius: 0.3rem;
+    border: 1.5px solid currentColor;
+    box-shadow: inset 0 0 0 1.5px var(--color-masa-850), inset 0 0 0 2.5px currentColor;
+    font-size: 0.66rem;
+    font-weight: 750;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    line-height: 1.3;
+    white-space: nowrap;
+    transform: rotate(-2deg);
+  }
+  .sello svg,
+  .sello-verificada svg { width: 0.8rem; height: 0.8rem; flex: none; }
+
+  /* Visto bueno: la receta pasó por la nutricionista, va en tinta verde */
+  .sello-verificada { color: var(--color-exito-400); }
+
+  /* En lápiz: lo que nadie revisó todavía. Trazo punteado de grafito. */
+  .sello-lapiz {
+    color: var(--color-crema-500);
+    border-style: dashed;
+    box-shadow: none;
+  }
+
+  /* Donde iría la foto pegada: la cuadrícula a la vista y un recuadro
+     punteado de lápiz. La mayoría de recetas no tiene foto, así que el
+     hueco tiene que verse a propósito y no como imagen rota. */
+  .hueco-foto {
+    position: relative;
+    background-color: var(--color-masa-950);
+    background-image:
+      linear-gradient(var(--color-cuadricula) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-cuadricula) 1px, transparent 1px);
+    background-size: 12px 12px;
+  }
+  .hueco-foto::after {
+    content: "";
+    position: absolute;
+    inset: 8px;
+    border: 1px dashed var(--color-linea-fuerte);
+    border-radius: 0.3rem;
+    pointer-events: none;
+  }
+
+  /* En los listados el sello va recto: la inclinación repetida treinta
+     veces deja de leerse como sello y pasa a ser adorno */
+  .sello-recto { transform: none; }
+
+  /* Bloque escrito a lápiz: propuestas de la IA antes de guardarse */
+  .en-lapiz {
+    border-style: dashed !important;
+    border-color: var(--color-linea-fuerte) !important;
+  }
+
+  /* -------------------------------------------------------------------
+     Interruptor de tema
+     ------------------------------------------------------------------- */
+
+  .boton-tema {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    border-radius: 0.45rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+    color: var(--color-crema-300);
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .boton-tema:hover {
+    background: color-mix(in oklab, var(--color-oro-500) 9%, transparent);
+    color: var(--color-crema-50);
+  }
+  .boton-tema svg { width: 1rem; height: 1rem; flex: none; }
+  /* Se muestra el destino, no el estado: en la hoja se ofrece la pizarra */
+  .boton-tema .si-oscuro { display: none; }
+  :root[data-tema="oscuro"] .boton-tema .si-oscuro { display: inline; }
+  :root[data-tema="oscuro"] .boton-tema .si-claro { display: none; }
+}
+
+/* ---------------------------------------------------------------------
+   UTILIDADES Y EFECTOS
+   --------------------------------------------------------------------- */
+
+@layer utilities {
+
+  /* Polvo de tiza: solo en la pizarra, apenas perceptible */
+  .grano::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    pointer-events: none;
+    opacity: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  :root[data-tema="oscuro"] .grano::after { opacity: 0.035; }
+
+  /* Velo de la franja de foto del acceso */
+  .velo-seccion {
+    background: linear-gradient(to bottom,
+      rgb(18 27 23 / 0.55) 0%,
+      rgb(18 27 23 / 0.15) 40%,
+      rgb(18 27 23 / 0.55) 100%);
+  }
+
+  /* Velo de las fotos de fondo, del color del tema: hoja clara en el tema
+     claro, pizarra en el oscuro. Denso donde va el texto (a la izquierda)
+     y abierto a la derecha, para que la foto se vea sin tapar la lectura.
+     En el teléfono el texto ocupa todo el ancho, así que el velo es parejo. */
+  .velo-tema {
+    background: color-mix(in oklab, var(--color-masa-900) 84%, transparent);
+  }
+  @media (min-width: 1024px) {
+    .velo-tema {
+      background: linear-gradient(90deg,
+        color-mix(in oklab, var(--color-masa-900) 96%, transparent) 0%,
+        color-mix(in oklab, var(--color-masa-900) 88%, transparent) 38%,
+        color-mix(in oklab, var(--color-masa-900) 35%, transparent) 72%,
+        color-mix(in oklab, var(--color-masa-900) 10%, transparent) 100%);
+    }
+  }
+
+  /* Velo del acceso: más denso en el centro, donde va el formulario */
+  .velo-acceso {
+    background: radial-gradient(ellipse 60% 75% at 50% 50%,
+      color-mix(in oklab, var(--color-masa-900) 90%, transparent) 0%,
+      color-mix(in oklab, var(--color-masa-900) 62%, transparent) 70%,
+      color-mix(in oklab, var(--color-masa-900) 45%, transparent) 100%);
+  }
+
+  /* Movimiento lento de cámara sobre las fotos de fondo */
+  @keyframes deriva-hero {
+    0%   { transform: scale(1.08) translate(-1.5%, 0); }
+    50%  { transform: scale(1.14) translate(1.5%, -1.5%); }
+    100% { transform: scale(1.08) translate(-1.5%, 0); }
+  }
+  @keyframes deriva-seccion {
+    0%   { transform: scale(1.06) translate(1%, 1%); }
+    50%  { transform: scale(1.12) translate(-1%, -1%); }
+    100% { transform: scale(1.06) translate(1%, 1%); }
+  }
+  .deriva-hero    { animation: deriva-hero 26s ease-in-out infinite; }
+  .deriva-seccion { animation: deriva-seccion 30s ease-in-out infinite; }
+
+  /* La foto del acceso sigue un poco al puntero (lo mueve app.js con las
+     variables --px/--py). Usa la propiedad translate, aparte del transform
+     de la deriva, así los dos movimientos se suman sin pisarse. */
+  [data-paralaje] {
+    translate: var(--px, 0px) var(--py, 0px);
+    transition: translate 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  /* surgir y surgir-scroll quedan en el marcado sin efecto: el contenido
+     está quieto y visible desde el primer momento. */
+
+  /* El sello cae sobre el papel una vez: llega grande y ladeado, golpea y
+     queda en su sitio. Solo en los sellos marcados con .sello-estampar,
+     no en los listados, donde treinta golpes a la vez serían ruido. */
+  @keyframes estampar {
+    0%   { opacity: 0; transform: scale(1.9) rotate(-9deg); }
+    60%  { opacity: 1; transform: scale(0.94) rotate(-1.5deg); }
+    100% { opacity: 1; transform: scale(1) rotate(-2deg); }
+  }
+  .sello-estampar {
+    /* El golpe ya está en los fotogramas (se aplasta al 94% y vuelve):
+       la curva solo desacelera, sin rebote extra */
+    animation: estampar 0.42s cubic-bezier(0.25, 1, 0.5, 1) 0.35s both;
+  }
+
+  /* Un recuadro que se puede abrir marca su borde en tinta al pasar */
+  .elevar { transition: border-color 0.18s ease; }
+  .elevar:hover { border-color: color-mix(in oklab, var(--color-oro-500) 50%, var(--color-linea)); }
+
+  /* El cambio de tema se ve como pasar de la hoja a la pizarra, no como
+     un parpadeo. Solo durante el cambio, para no ralentizar lo demás. */
+  .cambiando-tema,
+  .cambiando-tema *,
+  .cambiando-tema *::before {
+    transition: background-color 0.35s ease, border-color 0.35s ease, color 0.25s ease !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

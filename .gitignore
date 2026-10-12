@@ -1,0 +1,45 @@
+*.log
+.DS_Store
+.env
+.env.backup
+.env.production
+.phpactor.json
+.phpunit.result.cache
+/.codex
+/.cursor/
+/.idea
+/.nova
+/.phpunit.cache
+/.vscode
+/.zed
+/auth.json
+/node_modules
+/public/build
+/public/fonts-manifest.dev.json
+/public/hot
+/public/storage
+/storage/*.key
+/storage/pail
+/vendor
+_ide_helper.php
+Homestead.json
+Homestead.yaml
+Thumbs.db
+# Dependencias pesadas
+node_modules/
+vendor/
+
+# Carpetas y configuraciones de Claude / Skills
+.claude/
+.impeccable/
+claude-skills/
+taste-skill/
+emil-skills/
+
+# Variables de entorno y credenciales
+.env
+.mcp.json
+
+# Archivos de caché o temporales
+phpunit.result.cache
+.DS_Store
